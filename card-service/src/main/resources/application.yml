@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: card-service
+  config:
+    import: "configserver:http://localhost:8888"
   data:
     mongodb:
       database: carddb

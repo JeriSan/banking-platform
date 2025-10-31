@@ -1,12 +1,11 @@
-server:
-  port: 8081
 spring:
   application:
     name: customer-service
+  config:
+    import: "configserver:http://localhost:8888"
   data:
     mongodb:
       database: customerdb
-      uri: mongodb://localhost:27021/customerdb
 management.endpoints.web.exposure.include: "*"
 springdoc:
   swagger-ui:
