@@ -1,0 +1,16 @@
+@startuml
+title Sequence: Create Credit
+
+actor Client
+Client -> CreditController: POST /api/credits
+CreditController -> CreditService: create(credit)
+
+CreditService -> CreditRepository: countByCustomerIdAndTypeAndActiveIsTrue()
+CreditRepository --> CreditService: count
+
+CreditService -> CreditRepository: save(credit)
+CreditRepository --> CreditService: savedCredit
+
+CreditService --> CreditController: savedCredit
+CreditController --> Client: 201 Created
+@enduml

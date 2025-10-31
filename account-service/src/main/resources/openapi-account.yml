@@ -1,0 +1,337 @@
+openapi: 3.0.3
+
+info:
+
+  title: Account Service API
+
+  version: 1.0.0
+
+servers:
+
+  - url: http://localhost:8082
+
+paths:
+
+  /api/accounts:
+
+    post:
+
+      summary: Create account
+
+      operationId: createAccount
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/Account' }
+
+      responses:
+
+        '201':
+
+          description: Created
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Account' }
+
+    get:
+
+      summary: List accounts
+
+      operationId: listAccounts
+
+      responses:
+
+        '200':
+
+          description: List of accounts
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/Account' }
+
+  /api/accounts/{id}:
+
+    put:
+
+      summary: Update account
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/Account' }
+
+      responses:
+
+        '200':
+
+          description: Updated
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Account' }
+
+    delete:
+
+      summary: Delete account
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '204':
+
+          description: Deleted
+
+  /api/accounts/{id}/deposit:
+
+    post:
+
+      summary: Deposit to account
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                amount: { type: number }
+
+                note: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Updated account
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Account' }
+
+  /api/accounts/{id}/withdraw:
+
+    post:
+
+      summary: Withdraw from account
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                amount: { type: number }
+
+                note: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Updated account
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Account' }
+
+  /api/accounts/{id}/balance:
+
+    get:
+
+      summary: Get account balance
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Balance
+
+          content:
+
+            application/json:
+
+              schema: { type: number }
+
+  /api/accounts/{id}/movements:
+
+    get:
+
+      summary: List account movements
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Movements
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/AccountMovement' }
+
+components:
+
+  schemas:
+
+    Account:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        customerId: { type: string }
+
+        type:
+
+          type: string
+
+          enum: [SAVINGS, CHECKING, FIXED_TERM]
+
+        balance: { type: number }
+
+        business: { type: boolean }
+
+        owners:
+
+          type: array
+
+          items: { type: string }
+
+        authorizedSigners:
+
+          type: array
+
+          items: { type: string }
+
+        monthlyMovementLimit: { type: integer }
+
+        fixedTermDayOfMonth: { type: integer }
+
+        movementCountThisMonth: { type: integer }
+
+    AccountMovement:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        accountId: { type: string }
+
+        timestamp: { type: string, format: date-time }
+
+        type: { type: string }
+
+        amount: { type: number }
+
+        balanceAfter: { type: number }
+
+        note: { type: string }

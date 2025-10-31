@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Credit Card Payment
+
+actor Client
+Client -> CardController: POST /api/cards/{id}/pay?amount=200
+CardController -> CardService: pay(id, amount)
+
+CardService -> CreditCardRepository: findById(id)
+CreditCardRepository --> CardService: card
+
+CardService -> CreditCardRepository: save(updatedCard)
+CardService -> CardMovementRepository: save(paymentMovement)
+
+CreditCardRepository --> CardService: cardUpdated
+CardMovementRepository --> CardService: movementSaved
+
+CardService --> CardController: updatedCard
+CardController --> Client: 200 OK + new balance
+@enduml

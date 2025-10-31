@@ -1,0 +1,13 @@
+@startuml
+title Sequence: Update Customer
+
+actor Client
+Client -> CustomerController: PUT /api/customers/{id}
+CustomerController -> CustomerService: update(id, customer)
+CustomerService -> CustomerRepository: findById(id)
+CustomerRepository --> CustomerService: customerFound
+CustomerService -> CustomerRepository: save(updatedCustomer)
+CustomerRepository --> CustomerService: updatedCustomer
+CustomerService --> CustomerController: updatedCustomer
+CustomerController --> Client: 200 OK + updated JSON
+@enduml

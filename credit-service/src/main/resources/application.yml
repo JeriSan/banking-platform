@@ -1,0 +1,13 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: credit-service
+  data:
+    mongodb:
+      database: creditdb
+      uri: mongodb://localhost:27023/creditdb
+management.endpoints.web.exposure.include: "*"
+springdoc:
+  swagger-ui:
+    path: /swagger

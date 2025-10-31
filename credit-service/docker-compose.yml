@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb-credit
+    restart: always
+    ports:
+      - "27023:27017"
+    environment:
+      MONGO_INITDB_DATABASE: creditdb
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

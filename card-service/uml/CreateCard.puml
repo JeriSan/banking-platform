@@ -1,0 +1,13 @@
+@startuml
+title Sequence: Issue Credit Card
+
+actor Client
+Client -> CardController: POST /api/cards
+CardController -> CardService: create(card)
+
+CardService -> CreditCardRepository: save(card)
+CreditCardRepository --> CardService: savedCard
+
+CardService --> CardController: savedCard
+CardController --> Client: 201 Created + card JSON
+@enduml

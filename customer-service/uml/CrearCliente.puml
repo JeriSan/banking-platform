@@ -1,0 +1,13 @@
+@startuml
+title Sequence: Create Customer
+
+actor Client
+Client -> CustomerController: POST /api/customers\n{customer JSON}
+CustomerController -> CustomerService: create(customer)
+CustomerService -> CustomerRepository: findByDocumentTypeAndDocumentNumber()
+CustomerRepository --> CustomerService: Mono.empty()
+CustomerService -> CustomerRepository: save(customer)
+CustomerRepository --> CustomerService: savedCustomer
+CustomerService --> CustomerController: savedCustomer
+CustomerController --> Client: 201 Created + customer JSON
+@enduml

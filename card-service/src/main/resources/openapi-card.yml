@@ -1,0 +1,311 @@
+openapi: 3.0.3
+
+info:
+
+  title: Card Service API
+
+  version: 1.0.0
+
+servers:
+
+  - url: http://localhost:8084
+
+paths:
+
+  /api/cards:
+
+    post:
+
+      summary: Create card
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/CreditCard' }
+
+      responses:
+
+        '201':
+
+          description: Created
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/CreditCard' }
+
+    get:
+
+      summary: List cards
+
+      responses:
+
+        '200':
+
+          description: List
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/CreditCard' }
+
+  /api/cards/{id}:
+
+    put:
+
+      summary: Update card
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/CreditCard' }
+
+      responses:
+
+        '200':
+
+          description: Updated
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/CreditCard' }
+
+    delete:
+
+      summary: Delete card
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '204':
+
+          description: Deleted
+
+  /api/cards/{id}/charge:
+
+    post:
+
+      summary: Charge card
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                amount: { type: number }
+
+                description: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Updated card
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/CreditCard' }
+
+  /api/cards/{id}/pay:
+
+    post:
+
+      summary: Pay card balance
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                amount: { type: number }
+
+      responses:
+
+        '200':
+
+          description: Updated card
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/CreditCard' }
+
+  /api/cards/{id}/available:
+
+    get:
+
+      summary: Available credit
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Available credit
+
+          content:
+
+            application/json:
+
+              schema: { type: number }
+
+  /api/cards/{id}/movements:
+
+    get:
+
+      summary: Card movements
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Movement list
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/CardMovement' }
+
+components:
+
+  schemas:
+
+    CreditCard:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        customerId: { type: string }
+
+        ownerType:
+
+          type: string
+
+          enum: [PERSONAL, BUSINESS]
+
+        creditLimit: { type: number }
+
+        currentBalance: { type: number }
+
+        active: { type: boolean }
+
+    CardMovement:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        cardId: { type: string }
+
+        timestamp: { type: string, format: date-time }
+
+        type: { type: string }
+
+        amount: { type: number }
+
+        balanceAfter: { type: number }
+
+        description: { type: string }

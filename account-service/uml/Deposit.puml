@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Deposit to Account
+
+actor Client
+Client -> AccountController: POST /api/accounts/{id}/deposit?amount=100
+AccountController -> AccountService: deposit(id, amount)
+
+AccountService -> AccountRepository: findById(id)
+AccountRepository --> AccountService: account
+
+AccountService -> AccountRepository: save(updatedAccount)
+AccountService -> AccountMovementRepository: save(movement)
+
+AccountMovementRepository --> AccountService: movementSaved
+AccountRepository --> AccountService: accountUpdated
+
+AccountService --> AccountController: updatedAccount
+AccountController --> Client: 200 OK + new balance
+@enduml

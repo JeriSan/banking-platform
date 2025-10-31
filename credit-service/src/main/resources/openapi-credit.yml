@@ -1,0 +1,269 @@
+openapi: 3.0.3
+
+info:
+
+  title: Credit Service API
+
+  version: 1.0.0
+
+servers:
+
+  - url: http://localhost:8083
+
+paths:
+
+  /api/credits:
+
+    post:
+
+      summary: Create credit
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/Credit' }
+
+      responses:
+
+        '201':
+
+          description: Created
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Credit' }
+
+    get:
+
+      summary: List credits
+
+      responses:
+
+        '200':
+
+          description: List
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/Credit' }
+
+  /api/credits/{id}:
+
+    put:
+
+      summary: Update credit
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema: { $ref: '#/components/schemas/Credit' }
+
+      responses:
+
+        '200':
+
+          description: Updated
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Credit' }
+
+    delete:
+
+      summary: Delete credit
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '204':
+
+          description: Deleted
+
+  /api/credits/{id}/pay:
+
+    post:
+
+      summary: Pay credit
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                amount: { type: number }
+
+      responses:
+
+        '200':
+
+          description: Updated credit
+
+          content:
+
+            application/json:
+
+              schema: { $ref: '#/components/schemas/Credit' }
+
+  /api/credits/{id}/balance:
+
+    get:
+
+      summary: Credit balance
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Balance
+
+          content:
+
+            application/json:
+
+              schema: { type: number }
+
+  /api/credits/{id}/payments:
+
+    get:
+
+      summary: Payment history
+
+      parameters:
+
+        - name: id
+
+          in: path
+
+          required: true
+
+          schema: { type: string }
+
+      responses:
+
+        '200':
+
+          description: Payment list
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: array
+
+                items: { $ref: '#/components/schemas/CreditPayment' }
+
+components:
+
+  schemas:
+
+    Credit:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        customerId: { type: string }
+
+        type:
+
+          type: string
+
+          enum: [PERSONAL, BUSINESS]
+
+        principal: { type: number }
+
+        balance: { type: number }
+
+        interestRateAnnual: { type: number }
+
+        active: { type: boolean }
+
+        startDate: { type: string, format: date }
+
+    CreditPayment:
+
+      type: object
+
+      properties:
+
+        id: { type: string }
+
+        creditId: { type: string }
+
+        timestamp: { type: string, format: date-time }
+
+        amount: { type: number }
+
+        balanceAfter: { type: number }

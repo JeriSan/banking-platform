@@ -1,0 +1,16 @@
+@startuml
+title Sequence: Create Bank Account
+
+actor Client
+Client -> AccountController: POST /api/accounts\n{account JSON}
+AccountController -> AccountService: create(account)
+
+AccountService -> AccountRepository: countByCustomerIdAndType()
+AccountRepository --> AccountService: count
+
+AccountService -> AccountRepository: save(account)
+AccountRepository --> AccountService: savedAccount
+
+AccountService --> AccountController: savedAccount
+AccountController --> Client: 201 Created
+@enduml

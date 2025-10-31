@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Withdraw from Account
+
+actor Client
+Client -> AccountController: POST /api/accounts/{id}/withdraw?amount=50
+AccountController -> AccountService: withdraw(id, amount)
+
+AccountService -> AccountRepository: findById(id)
+AccountRepository --> AccountService: account
+
+AccountService -> AccountRepository: save(updatedAccount)
+AccountService -> AccountMovementRepository: save(movement)
+
+AccountRepository --> AccountService: accountUpdated
+AccountMovementRepository --> AccountService: movementSaved
+
+AccountService --> AccountController: updatedAccount
+AccountController --> Client: 200 OK + new balance
+@enduml

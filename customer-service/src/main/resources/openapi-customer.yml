@@ -1,0 +1,89 @@
+openapi: 3.0.3
+info:
+  title: Customer Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+paths:
+  /api/customers:
+    post:
+      summary: Create customer
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    get:
+      summary: List all customers
+      operationId: listCustomers
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+  /api/customers/{id}:
+    put:
+      summary: Update customer
+      operationId: updateCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Updated customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    delete:
+      summary: Delete customer
+      operationId: deleteCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Deleted
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id: { type: string }
+        type:
+          type: string
+          enum: [PERSONAL, BUSINESS]
+        documentType: { type: string }
+        documentNumber: { type: string }
+        fullName: { type: string }
+        businessName: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        active: { type: boolean }
+      required:
+        - type
+        - documentType
+        - documentNumber

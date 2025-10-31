@@ -1,0 +1,66 @@
+@startuml
+title Banking Microservices Architecture (Database per Service)
+
+!theme blueprint
+
+actor "Client / Frontend" as Client
+
+rectangle "API Gateway (Opcional)" as Gateway {
+}
+
+node "Customer Service" as customer {
+  component "Customer Controller"
+  component "Customer Service"
+  database "MongoDB\ncustomerdb"
+}
+
+node "Account Service" as account {
+  component "Account Controller"
+  component "Account Service"
+  database "MongoDB\naccountdb"
+}
+
+node "Credit Service" as credit {
+  component "Credit Controller"
+  component "Credit Service"
+  database "MongoDB\ncreditdb"
+}
+
+node "Card Service" as card {
+  component "Card Controller"
+  component "Card Service"
+  database "MongoDB\ncarddb"
+}
+
+' Frontend flow
+Client --> Gateway : HTTPS Requests (REST)
+
+Gateway --> customer : /api/customers
+Gateway --> account : /api/accounts
+Gateway --> credit : /api/credits
+Gateway --> card : /api/cards
+
+' Business references between services (ID only, never DB)
+account --> customer : Validate customerId (API request)\n/no DB access
+credit --> customer : Validate customerId (API request)\n/no DB access
+card --> customer : Validate customerId (API request)\n/no DB access
+
+' DB Access — isolated per service
+customer --> "MongoDB\ncustomerdb" : CRUD Customer
+account --> "MongoDB\naccountdb" : CRUD Accounts\nCRUD Movements
+credit --> "MongoDB\ncreditdb" : CRUD Credits\nCRUD Payments
+card --> "MongoDB\ncarddb" : CRUD Cards\nCRUD Card Movements
+
+rectangle "Observability Layer" {
+  [Tracing (Zipkin / Jaeger)]
+  [Metrics (Prometheus/Grafana)]
+  [Logs (ELK / Loki)]
+}
+
+Gateway --> "Tracing (Zipkin / Jaeger)"
+customer --> "Tracing (Zipkin / Jaeger)"
+account --> "Tracing (Zipkin / Jaeger)"
+credit --> "Tracing (Zipkin / Jaeger)"
+card --> "Tracing (Zipkin / Jaeger)"
+
+@enduml
