@@ -26,4 +26,9 @@ public class Account {
     private List<String> authorizedSigners;
     private Boolean business;
     private int movementCountThisMonth;
+    private BigDecimal minimumOpeningAmount;
+    private BigDecimal minimumMonthlyAverageBalance;
+    private Integer freeTransactionsPerMonth;
+    private java.math.BigDecimal feePerExtraTransaction;
+    private Boolean requiresCreditCard;
 }

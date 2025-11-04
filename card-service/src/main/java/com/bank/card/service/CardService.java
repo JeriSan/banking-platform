@@ -63,4 +63,8 @@ public class CardService {
     public Flux<CardMovement> movements(String cardId){
         return movRepo.findByCardIdOrderByTimestampDesc(cardId);
     }
+
+    public reactor.core.publisher.Mono<Boolean> hasActiveCard(String customerId){
+        return repo.existsByCustomerIdAndActiveIsTrue(customerId);
+    }
 }

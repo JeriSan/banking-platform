@@ -2,6 +2,9 @@ package com.bank.account.controller;
 
 import com.bank.account.domain.Account;
 import com.bank.account.domain.AccountMovement;
+import com.bank.account.dto.AverageBalanceResponse;
+import com.bank.account.dto.FeesReportResponse;
+import com.bank.account.dto.TransferRequest;
 import com.bank.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +20,7 @@ import java.math.BigDecimal;
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-
     private final AccountService service;
-
 
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public Mono<Account> create(@RequestBody Account a){
@@ -69,5 +70,34 @@ public class AccountController {
 
     public Flux<AccountMovement> movements(@PathVariable String id){ return service.getMovements(id); }
 
+    // Transfers
+    @PostMapping("/transfer/internal/{customerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> transferInternal(@PathVariable String customerId, @RequestBody TransferRequest req){
+        return service.transferInternal(customerId, req.getFromAccountId(), req.getToAccountId(), req.getAmount(), req.getNote());
+    }
+
+    @PostMapping("/transfer/external")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> transferExternal(@RequestBody TransferRequest req,
+                                      @RequestParam(required=false, defaultValue = "1.50") BigDecimal fee){
+        return service.transferExternal(req.getFromAccountId(), req.getToAccountId(), req.getAmount(), req.getNote(), fee);
+    }
+
+    // Reports
+    @GetMapping("/reports/average/{customerId}")
+    public Flux<AverageBalanceResponse> averageBalances(@PathVariable String customerId,
+                                                                               @RequestParam int year,
+                                                                               @RequestParam int month){
+        return service.averageBalancesForCustomerMonth(customerId, java.time.YearMonth.of(year, month));
+    }
+
+    @GetMapping("/reports/fees/{accountId}")
+    public Mono<FeesReportResponse> fees(@PathVariable String accountId,
+                                                                @RequestParam String from, @RequestParam String to){
+        java.time.LocalDateTime f = java.time.LocalDateTime.parse(from);
+        java.time.LocalDateTime t = java.time.LocalDateTime.parse(to);
+        return service.feesReportForAccount(accountId, f, t);
+    }
 }
 

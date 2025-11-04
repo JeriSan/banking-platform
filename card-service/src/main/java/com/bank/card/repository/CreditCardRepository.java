@@ -9,4 +9,5 @@ import reactor.core.publisher.Mono;
 public interface CreditCardRepository extends ReactiveMongoRepository<CreditCard,String> {
     Flux<CreditCard> findByCustomerId(String customerId);
     Mono<Long> countByCustomerIdAndOwnerTypeAndActiveIsTrue(String customerId, CardOwnerType ownerType);
+    reactor.core.publisher.Mono<Boolean> existsByCustomerIdAndActiveIsTrue(String customerId);
 }
