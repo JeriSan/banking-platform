@@ -9,10 +9,12 @@
     <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/credit-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/customer-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/debit-card-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gateway-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/summary-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../card-service/card-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../credit-service/credit-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../customer-service/customer-service/src/main/java" charset="UTF-8" />

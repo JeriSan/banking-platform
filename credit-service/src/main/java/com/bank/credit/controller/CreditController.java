@@ -39,10 +39,10 @@ public class CreditController {
         return service.delete(id);
     }
 
-    @PostMapping("/{id}/pay")
+   /* @PostMapping("/{id}/pay")
     public Mono<Credit> pay(@PathVariable String id, @RequestParam BigDecimal amount){
         return service.pay(id,amount);
-    }
+    }*/
 
     @GetMapping("/{id}/balance")
     public Mono<BigDecimal> balance (@PathVariable String id){
@@ -54,5 +54,20 @@ public class CreditController {
         return service.payments(id);
     }
 
+    @GetMapping("/overdue/{customerId}")
+    public Mono<Boolean> hasOverdue(@PathVariable String customerId){
+        return service.hasOverdueDebts(customerId);
+    }
 
+    @PostMapping("/{id}/pay")
+    public Mono<Credit> pay(@PathVariable String id,
+                            @RequestParam BigDecimal amount,
+                            @RequestParam(required=false) String payerCustomerId){
+        return service.pay(id, amount, payerCustomerId);
+    }
+
+    @GetMapping("/{id}/payments/top10")
+    public Flux<CreditPayment> last10(@PathVariable String id){
+        return service.last10Payments(id);
+    }
 }

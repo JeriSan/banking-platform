@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Document("credits")
 @Data
@@ -29,6 +30,8 @@ public class Credit {
 
     private boolean active;
 
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
+    private LocalDateTime nextDueDate; //proxima fecha de pago programada
+    private boolean overdue; // bandera calculada actualizada por job o al pagar
 }

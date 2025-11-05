@@ -56,5 +56,8 @@ public class CardController {
         return service.hasActiveCard(cusomerId);
 
     }
-
+    @GetMapping("/{id}/movements/top10")
+    public Flux<CardMovement> last10(@PathVariable String id){
+        return service.movements(id).take(10);
+    }
 }

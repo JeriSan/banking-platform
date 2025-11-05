@@ -1,4 +1,4 @@
-package com.bank.credit.domain;
+package com.bank.debitcard.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,25 +9,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
-@Document("credit_payments")
+@Document("debit_card_movements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreditPayment {
+public class DebitCardMovement {
     @Id
-
     private String id;
-
-    private String creditId;
-
+    private String cardId;
     private LocalDateTime timestamp;
-
+    private String type;            // PAYMENT | WITHDRAW
     private BigDecimal amount;
-
-    private BigDecimal balanceAfter;
-    private String payerCustomerId; // permite pago por terceros
-
+    private String accountUsedId;   // desde qué cuenta se descontó
+    private String description;
 }

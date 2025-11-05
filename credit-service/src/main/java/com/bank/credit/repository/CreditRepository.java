@@ -12,7 +12,7 @@ public interface CreditRepository extends ReactiveMongoRepository<Credit, String
     Flux<Credit> findByCustomerId(String customerId);
 
     Mono<Long> countByCustomerIdAndTypeAndActiveIsTrue(String customerId, CreditType type);
-
+    Mono<Boolean> existsByCustomerIdAndOverdueIsTrue(String customerId); //
 }
 
 

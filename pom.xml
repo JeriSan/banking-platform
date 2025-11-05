@@ -35,6 +35,8 @@
         <module>config-server</module>
         <module>eureka-server</module>
         <module>gateway-server</module>
+        <module>debit-card-service</module>
+        <module>summary-service</module>
     </modules>
     <properties>
         <java.version>17</java.version>
