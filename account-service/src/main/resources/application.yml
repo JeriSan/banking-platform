@@ -13,6 +13,11 @@ springdoc:
 card:
   service:
     base-url: http://localhost:8084
+
+credit:
+  service:
+    base-url: http://credit-service:8083
+
 eureka:
   client:
     service-url:

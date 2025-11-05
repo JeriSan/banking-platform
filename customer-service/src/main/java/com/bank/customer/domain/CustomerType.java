@@ -1,5 +1,5 @@
 package com.bank.customer.domain;
 
-public enum                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  CustomerType {
+public enum CustomerType {
     PERSONAL, BUSINESS, PERSONAL_VIP, BUSINESS_PYME
 }

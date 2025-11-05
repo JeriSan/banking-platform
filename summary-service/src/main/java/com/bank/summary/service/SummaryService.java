@@ -1,7 +1,6 @@
 package com.bank.summary.service;
 
-import com.bank.debitcard.dto.AccountDto;
-import com.bank.summary.dto.CustomerSummary;
+import com.bank.summary.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
