@@ -1,6 +1,5 @@
 package com.bank.summary.dto;
 
-import com.bank.debitcard.dto.AccountDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import reactor.core.publisher.Mono;
@@ -37,53 +38,67 @@ public class AccountService {
     private final FeeMovementRepository feeRepo;
     private final DailyBalanceRepository dailyRepo;
     private final CardClient cardClient;
+    private final WebClient creditWebClient;
 
     public Mono<Account> create(Account a){
-        if(a.getMinimumOpeningAmount()!=null
-        && a.getBalance()!=null
-        && a.getBalance().compareTo(a.getMinimumOpeningAmount())<0){
-            return Mono.error(new IllegalStateException("Opening balance too low"));
-        }
-        // VIP savings y PYME checking requieren tarjeta activa
-        boolean requiresCard = Boolean.TRUE.equals(a.getRequiresCreditCard());
-        Mono<Boolean> cardCheck = requiresCard
-                ? cardClient.hasActiveCard(a.getCustomerId())
-                : Mono.just(true);
+        // Verificación previa a crear producto
+        Mono<Boolean> hasOverdue = creditWebClient.get()
+                .uri("/api/credits/overdue/{cid}", a.getCustomerId())
+                .retrieve().bodyToMono(Boolean.class).defaultIfEmpty(false);
 
-        // maintenance fee off para CHECKING_PYME
-        if (a.getType()==AccountType.CHECKING_PYME) {
-            a.setMaintenanceFee(false);
-            a.setRequiresCreditCard(true);
-        }
-        // defaults
-        if (a.getBalance()==null) a.setBalance(java.math.BigDecimal.ZERO);
-        if (a.getFreeTransactionsPerMonth()==null) a.setFreeTransactionsPerMonth(10);
-        if (a.getFeePerExtraTransaction()==null) a.setFeePerExtraTransaction(new java.math.BigDecimal("1.00"));
+        return hasOverdue.flatMap(b -> {
+            if (b) return Mono.error(new IllegalStateException("Customer has overdue debt"));
 
-        return cardCheck.flatMap(has -> {
-            if (!has) return Mono.error(new IllegalStateException("Customer must have an active credit card"));
-
-            //return repo.save(a);
-            // Validate type rules (personal vs business)
-            if (Boolean.TRUE.equals(a.getBusiness())) {
-
-                if (a.getType()== SAVINGS || a.getType()== FIXED_TERM)
-                    return Mono.error(new IllegalArgumentException("Business cannot have savings or fixed-term"));
-                if (a.getOwners()==null || a.getOwners().isEmpty())
-                    return Mono.error(new IllegalArgumentException("Business account requires at least one owner"));
-            } else {
-                // personal limits
-                Mono<Void> limitCheck = switch (a.getType()){
-                    case SAVINGS, SAVINGS_VIP   -> repo.countByCustomerIdAndType(a.getCustomerId(), SAVINGS)
-                            .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one savings per personal")):Mono.empty());
-                    case CHECKING, CHECKING_PYME, CHECKING_VIP  -> repo.countByCustomerIdAndType(a.getCustomerId(), CHECKING)
-                            .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one checking per personal")):Mono.empty());
-                    case FIXED_TERM -> Mono.empty(); // multiple allowed
-                };
-                return limitCheck.then(repo.save(initDefaults(a)));
+            if(a.getMinimumOpeningAmount()!=null
+                    && a.getBalance()!=null
+                    && a.getBalance().compareTo(a.getMinimumOpeningAmount())<0){
+                return Mono.error(new IllegalStateException("Opening balance too low"));
             }
-            return repo.save(initDefaults(a));
+
+            // maintenance fee off para CHECKING_PYME
+            if (a.getType()==AccountType.CHECKING_PYME) {
+                a.setMaintenanceFee(false);
+                a.setRequiresCreditCard(true);
+            }
+
+            // VIP savings y PYME checking requieren tarjeta activa
+            boolean requiresCard = Boolean.TRUE.equals(a.getRequiresCreditCard());
+            Mono<Boolean> cardCheck = requiresCard
+                    ? cardClient.hasActiveCard(a.getCustomerId())
+                    : Mono.just(true);
+
+            // defaults
+            if (a.getBalance()==null) a.setBalance(java.math.BigDecimal.ZERO);
+            if (a.getFreeTransactionsPerMonth()==null) a.setFreeTransactionsPerMonth(10);
+            if (a.getFeePerExtraTransaction()==null) a.setFeePerExtraTransaction(new java.math.BigDecimal("1.00"));
+
+            return cardCheck.flatMap(has -> {
+                if (!has) return Mono.error(new IllegalStateException("Customer must have an active credit card"));
+
+                //return repo.save(a);
+                // Validate type rules (personal vs business)
+                if (Boolean.TRUE.equals(a.getBusiness())) {
+
+                    if (a.getType()== SAVINGS || a.getType()== FIXED_TERM)
+                        return Mono.error(new IllegalArgumentException("Business cannot have savings or fixed-term"));
+                    if (a.getOwners()==null || a.getOwners().isEmpty())
+                        return Mono.error(new IllegalArgumentException("Business account requires at least one owner"));
+                } else {
+                    // personal limits
+                    Mono<Void> limitCheck = switch (a.getType()){
+                        case SAVINGS -> repo.countByCustomerIdAndType(a.getCustomerId(), SAVINGS)
+                                .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one savings per personal")):Mono.empty());
+                        case CHECKING -> repo.countByCustomerIdAndType(a.getCustomerId(), CHECKING)
+                                .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one checking per personal")):Mono.empty());
+                        case FIXED_TERM -> Mono.empty(); // multiple allowed
+                        default -> Mono.empty();
+                    };
+                    return limitCheck.then(repo.save(initDefaults(a)));
+                }
+                return repo.save(initDefaults(a));
+            });
         });
+
     }
 
     private Account initDefaults(Account a){
