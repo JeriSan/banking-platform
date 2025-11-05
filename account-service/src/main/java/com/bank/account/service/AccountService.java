@@ -44,17 +44,19 @@ public class AccountService {
         && a.getBalance().compareTo(a.getMinimumOpeningAmount())<0){
             return Mono.error(new IllegalStateException("Opening balance too low"));
         }
-        // VIP savings y PYME checking requieren tarjeta activa
-        boolean requiresCard = Boolean.TRUE.equals(a.getRequiresCreditCard());
-        Mono<Boolean> cardCheck = requiresCard
-                ? cardClient.hasActiveCard(a.getCustomerId())
-                : Mono.just(true);
 
         // maintenance fee off para CHECKING_PYME
         if (a.getType()==AccountType.CHECKING_PYME) {
             a.setMaintenanceFee(false);
             a.setRequiresCreditCard(true);
         }
+
+        // VIP savings y PYME checking requieren tarjeta activa
+        boolean requiresCard = Boolean.TRUE.equals(a.getRequiresCreditCard());
+        Mono<Boolean> cardCheck = requiresCard
+                ? cardClient.hasActiveCard(a.getCustomerId())
+                : Mono.just(true);
+
         // defaults
         if (a.getBalance()==null) a.setBalance(java.math.BigDecimal.ZERO);
         if (a.getFreeTransactionsPerMonth()==null) a.setFreeTransactionsPerMonth(10);
@@ -74,11 +76,12 @@ public class AccountService {
             } else {
                 // personal limits
                 Mono<Void> limitCheck = switch (a.getType()){
-                    case SAVINGS, SAVINGS_VIP   -> repo.countByCustomerIdAndType(a.getCustomerId(), SAVINGS)
+                    case SAVINGS -> repo.countByCustomerIdAndType(a.getCustomerId(), SAVINGS)
                             .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one savings per personal")):Mono.empty());
-                    case CHECKING, CHECKING_PYME, CHECKING_VIP  -> repo.countByCustomerIdAndType(a.getCustomerId(), CHECKING)
+                    case CHECKING -> repo.countByCustomerIdAndType(a.getCustomerId(), CHECKING)
                             .flatMap(c -> c>0 ? Mono.error(new IllegalStateException("Only one checking per personal")):Mono.empty());
                     case FIXED_TERM -> Mono.empty(); // multiple allowed
+                    default -> Mono.empty();
                 };
                 return limitCheck.then(repo.save(initDefaults(a)));
             }
