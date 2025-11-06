@@ -7,6 +7,9 @@ management.endpoints.web.exposure.include: "*"
 springdoc:
   swagger-ui:
     path: /swagger
+account:
+  service:
+    base-url: http://account-service:8082
 eureka:
   client:
     service-url:

@@ -1,11 +1,10 @@
 package com.bank.debitcard.controller;
 
 import com.bank.account.domain.Account;
-import com.bank.account.repository.AccountRepository;
-import com.bank.account.service.AccountService;
 import com.bank.debitcard.domain.DebitCard;
 import com.bank.debitcard.domain.DebitCardMovement;
 import com.bank.debitcard.service.DebitCardService;
+import com.bank.debitcard.webclient.AccountClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ import java.math.BigDecimal;
 @RestController @RequestMapping("/api/debit-cards") @RequiredArgsConstructor
 public class DebitCardController {
     private final DebitCardService service;
-    private final AccountRepository repo;
+    private final AccountClient accountClient;
 
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public Mono<DebitCard> create(@RequestBody DebitCard c){ return service.create(c); }
@@ -53,6 +52,6 @@ public class DebitCardController {
 
     @GetMapping(params = "customerId")
     public Flux<Account> listByCustomer(@RequestParam String customerId){
-        return repo.findByCustomerId(customerId);
+        return accountClient.findByCustomerId(customerId);
     }
 }

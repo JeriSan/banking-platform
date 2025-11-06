@@ -1,9 +1,11 @@
 package com.bank.debitcard.webclient;
 
+import com.bank.account.domain.Account;
 import com.bank.debitcard.dto.AccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -26,5 +28,11 @@ public class AccountClient {
                         uriBuilder.path("/api/accounts/{id}/withdraw")
                                 .queryParam("amount", amount).queryParam("note", note).build(id))
                 .retrieve().bodyToMono(AccountDto.class);
+    }
+    public Flux<Account> findByCustomerId(String customerId) {
+        return accountWebClient.get()
+                .uri(uriBuilder -> uriBuilder.queryParam("customerId", customerId).build())
+                .retrieve()
+                .bodyToFlux(Account.class);
     }
 }

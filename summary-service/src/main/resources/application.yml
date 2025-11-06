@@ -11,3 +11,19 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+account:
+  service:
+    base-url: http://account-service:8082
+
+credit:
+  service:
+    base-url: http://credit-service:8083
+
+card:
+  service:
+    base-url: http://card-service:8084
+
+debit:
+  service:
+    base-url: http://debit-service:8085

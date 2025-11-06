@@ -2,12 +2,12 @@ version: '3.8'
 services:
   mongo:
     image: mongo:latest
-    container_name: mongodb-account
+    container_name: mongodb-debitcard
     restart: always
     ports:
-      - "27022:27017"
+      - "27025:27017"
     environment:
-      MONGO_INITDB_DATABASE: accountdb
+      MONGO_INITDB_DATABASE: debitcarddb
     volumes:
       - mongo_data:/data/db
 
